@@ -23,11 +23,18 @@ class SearchViewModel with ChangeNotifier {
   String? _errMessage;
   String? get errMessage => _errMessage;
 
-  void initView(String query) async {
+  Future initView(String query) async {
+    reset();
     await setPosts(query);
     await setUsers(query);
 
     notifyListeners();
+  }
+
+  void reset() {
+    _resultPosts.clear();
+    _users.clear();
+    _errMessage = null;
   }
 
   void setError(String? err) {
