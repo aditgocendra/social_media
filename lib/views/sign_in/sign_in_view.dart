@@ -27,6 +27,7 @@ class SignInView extends StatelessWidget {
         child: Container(
           width: 600,
           padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
