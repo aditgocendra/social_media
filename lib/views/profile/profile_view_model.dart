@@ -25,6 +25,9 @@ class ProfileViewModel with ChangeNotifier {
   final List<Map<String, dynamic>> _posts = [];
   List<Map<String, dynamic>> get posts => _posts;
 
+  final List<Map<String, dynamic>> _postBookmarks = [];
+  List<Map<String, dynamic>> get postBookmarks => _postBookmarks;
+
   List<String> _userImages = [];
   List<String> get userImages => _userImages;
 
@@ -51,6 +54,7 @@ class ProfileViewModel with ChangeNotifier {
     await setUserData(uid);
     await setCountFollowers();
     await setPosts(uid);
+    await setBookmarkPost(uid);
     await setUserGallery(uid);
   }
 
@@ -162,6 +166,41 @@ class ProfileViewModel with ChangeNotifier {
     final f2 = await userService.countFollows(user!.id);
     _follow = (f1, f2);
     notifyListeners();
+  }
+
+  Future setBookmarkPost(String uid) async {
+    try {
+      final bookmarks = await userService.getBookmarkPost(
+        uid: uid,
+      );
+
+      for (var element in bookmarks) {
+        final post = await postService.getPost(element);
+
+        final isUserLike = await postService.isUserLikePost(
+          userId: userService.currentAuthUID()!,
+          postId: post.id,
+        );
+
+        final isUserBookmark = await postService.isUserBookmarkPost(
+          userId: userService.currentAuthUID()!,
+          postId: post.id,
+        );
+
+        final userPost = await userService.getUser(post.userId);
+
+        _postBookmarks.add({
+          'post': post,
+          'user': userPost,
+          'isLike': isUserLike,
+          'isBookmark': isUserBookmark,
+        });
+      }
+
+      notifyListeners();
+    } catch (e) {
+      setError(e.toString());
+    }
   }
 
   Future setPosts(String uid) async {

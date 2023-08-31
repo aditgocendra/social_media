@@ -221,8 +221,35 @@ class _ProfileViewState extends State<ProfileView>
                       }).toList(),
                     ),
                     // Bookmark Post
-                    Container(),
+                    ListView(
+                      shrinkWrap: true,
+                      primary: false,
+                      children: viewModel.postBookmarks.map((val) {
+                        final PostModel post = val['post'];
+                        final UserModel user = val['user'];
+                        final bool isLike = val['isLike'];
+                        final bool isBookmark = val['isBookmark'];
 
+                        return cardCustom(
+                          content: Post(
+                            post: post,
+                            user: user,
+                            isLike: isLike,
+                            isBookmark: isBookmark,
+                            updateCounterPost: (postId, field) {
+                              viewModel.updateCounterPost(postId, field);
+                            },
+                            deletePost: (uid) {
+                              if (uid != post.userId) {
+                                viewModel.blockPost(uid: uid, postId: post.id);
+                              } else {
+                                viewModel.deletePost(post);
+                              }
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
                     // Gallery
                     GridView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 8),
