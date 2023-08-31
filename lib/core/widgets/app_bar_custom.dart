@@ -55,9 +55,9 @@ class AppBarCustom extends StatelessWidget {
                 controller: tecSearch,
                 onSubmitted: (value) {
                   if (tecSearch.text.isEmpty) return;
-
-                  context.go('/search?query=${tecSearch.text.trim()}');
-                  context.push('/search?query=${tecSearch.text.trim()}');
+                  context.push(
+                    '/search?query=${tecSearch.text.toLowerCase().trim()}',
+                  );
                 },
                 style: const TextStyle(fontSize: 14),
                 decoration: TextFieldDecoration.filled(
@@ -72,9 +72,9 @@ class AppBarCustom extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         if (tecSearch.text.isEmpty) return;
-                        context.go('/search?query=${tecSearch.text.trim()}');
+
                         context.push(
-                          '/search?query=${tecSearch.text.trim()}',
+                          '/search?query=${tecSearch.text.toLowerCase().trim()}',
                         );
                       },
                       child: const Icon(
