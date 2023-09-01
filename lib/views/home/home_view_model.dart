@@ -16,7 +16,7 @@ class HomeViewModel with ChangeNotifier {
   final List<Map<String, dynamic>> _postUsers = [];
   List<Map<String, dynamic>> get postUsers => _postUsers;
 
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _errMessage;
@@ -25,12 +25,11 @@ class HomeViewModel with ChangeNotifier {
   void initView() async {
     reset();
     await userService.setBlockPost(uid: userService.currentAuthUID()!);
-    await setPost();
+    await setPost(null);
   }
 
   void reset() {
     _postUsers.clear();
-    _isLoading = true;
   }
 
   void setError(String? err) {
@@ -99,9 +98,12 @@ class HomeViewModel with ChangeNotifier {
     }
   }
 
-  Future setPost() async {
+  Future setPost(String? lastIdProduct) async {
+    toogleLoading();
+    notifyListeners();
+
     try {
-      final posts = await postService.getPosts();
+      final posts = await postService.getPosts(startAfterId: lastIdProduct);
 
       for (var post in posts) {
         final isUserLike = await postService.isUserLikePost(
@@ -123,7 +125,6 @@ class HomeViewModel with ChangeNotifier {
           'isBookmark': isUserBookmark,
         });
       }
-      notifyListeners();
     } catch (e) {
       setError(e.toString());
     }

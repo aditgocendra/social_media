@@ -25,7 +25,7 @@ class SearchViewModel with ChangeNotifier {
 
   Future initView(String query) async {
     reset();
-    await setPosts(query);
+    await setPosts(query, null);
     await setUsers(query);
 
     notifyListeners();
@@ -83,7 +83,7 @@ class SearchViewModel with ChangeNotifier {
     await postService.deletePost(post);
   }
 
-  Future setPosts(String query) async {
+  Future setPosts(String query, String? lastId) async {
     try {
       final posts = await postService.getPosts(searchKey: query);
 

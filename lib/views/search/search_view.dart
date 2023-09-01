@@ -18,6 +18,8 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
+  final ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +27,14 @@ class _SearchViewState extends State<SearchView>
 
     final viewModel = context.read<SearchViewModel>();
     viewModel.initView(widget.query);
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        final PostModel post = viewModel.resultPosts.last['post'];
+        viewModel.setPosts(widget.query, post.id);
+      }
+    });
   }
 
   @override

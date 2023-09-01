@@ -53,14 +53,15 @@ class ProfileViewModel with ChangeNotifier {
 
     await setUserData(uid);
     await setCountFollowers();
-    await setPosts(uid);
-    await setBookmarkPost(uid);
+    await setPosts(uid, null);
+    await setBookmarkPost(uid, null);
     await setUserGallery(uid);
   }
 
   void reset() {
     _userImages.clear();
     _posts.clear();
+    _postBookmarks.clear();
 
     _follow = (0, 0);
     _isUserFollow = false;
@@ -168,10 +169,11 @@ class ProfileViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future setBookmarkPost(String uid) async {
+  Future setBookmarkPost(String uid, String? lastId) async {
     try {
       final bookmarks = await userService.getBookmarkPost(
         uid: uid,
+        startAfterId: lastId,
       );
 
       for (var element in bookmarks) {
@@ -203,9 +205,9 @@ class ProfileViewModel with ChangeNotifier {
     }
   }
 
-  Future setPosts(String uid) async {
+  Future setPosts(String uid, String? lastId) async {
     try {
-      final r = await postService.getPosts(uid: uid);
+      final r = await postService.getPosts(uid: uid, startAfterId: lastId);
 
       for (var post in r) {
         final isUserLike = await postService.isUserLikePost(
