@@ -57,7 +57,10 @@ abstract class UserService {
     required String pid,
   });
 
-  Future<List<String>> getBookmarkPost({required String uid});
+  Future<List<String>> getBookmarkPost({
+    required String uid,
+    String? startAfterId,
+  });
 
   Future<List<String>> getAllImage(String uid);
 
@@ -329,14 +332,23 @@ class UserServiceImpl implements UserService {
   }
 
   @override
-  Future<List<String>> getBookmarkPost({required String uid}) async {
+  Future<List<String>> getBookmarkPost({
+    required String uid,
+    String? startAfterId,
+  }) async {
     List<String> bookmarksPostId = [];
 
-    final r = await _firestore
-        .collection(_collection)
-        .doc(uid)
-        .collection('bookmarks')
-        .get();
+    final collection =
+        _firestore.collection(_collection).doc(uid).collection('bookmarks');
+
+    Query<Map<String, dynamic>>? query = collection;
+
+    if (startAfterId != null) {
+      final doc = await collection.doc(startAfterId).get();
+      query = query.startAfterDocument(doc);
+    }
+
+    final r = await query.limit(10).get();
 
     for (var element in r.docs) {
       bookmarksPostId.add(element.id);
