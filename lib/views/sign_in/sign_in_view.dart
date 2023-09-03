@@ -27,6 +27,7 @@ class SignInView extends StatelessWidget {
         child: Container(
           width: 600,
           padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -44,6 +45,10 @@ class SignInView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset(
+                  'assets/logo/logo-n.png',
+                  width: 84,
+                ),
                 TextFormField(
                   controller: emailTec,
                   validator: (value) => validatorField(value),

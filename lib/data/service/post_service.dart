@@ -256,11 +256,46 @@ class PostServiceImpl implements PostService {
 
   @override
   Future deletePost(PostModel post) async {
-    await _firestore.collection(_collection).doc(post.id).delete();
+    final batch = _firestore.batch();
+    final doc = _firestore.collection(_collection).doc(post.id);
+
+    await doc.collection('comments').get().then((snap) async {
+      if (snap.docs.isEmpty) {
+        return;
+      }
+
+      for (var doc in snap.docs) {
+        batch.delete(doc.reference);
+      }
+    });
+
+    await doc.collection('likes').get().then((snap) async {
+      if (snap.docs.isEmpty) {
+        return;
+      }
+
+      for (var doc in snap.docs) {
+        batch.delete(doc.reference);
+      }
+    });
+
+    await doc.collection('bookmarks').get().then((snap) async {
+      if (snap.docs.isEmpty) {
+        return;
+      }
+
+      for (var doc in snap.docs) {
+        batch.delete(doc.reference);
+      }
+    });
+
+    batch.delete(doc);
 
     for (var element in post.content) {
       await _cloudStorage.removeImage(element);
     }
+
+    batch.commit();
   }
 
   @override

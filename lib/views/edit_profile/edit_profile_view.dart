@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/view_template.dart';
@@ -43,10 +44,9 @@ class _EditProfileViewState extends State<EditProfileView> {
       widget: Builder(
         builder: (context) {
           if (viewModel.avatars.isEmpty) {
-            return const SizedBox(
-              width: 32,
-              height: 32,
-              child: CircularProgressIndicator(),
+            return LoadingAnimationWidget.threeArchedCircle(
+              color: primaryLightColor,
+              size: 40,
             );
           }
 

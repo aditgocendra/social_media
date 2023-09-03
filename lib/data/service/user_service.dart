@@ -57,6 +57,11 @@ abstract class UserService {
     required String pid,
   });
 
+  Future<List<String>> getBookmarkPost({
+    required String uid,
+    String? startAfterId,
+  });
+
   Future<List<String>> getAllImage(String uid);
 
   String? currentAuthUID();
@@ -324,5 +329,31 @@ class UserServiceImpl implements UserService {
         'createdAt': DateTime.now(),
       });
     }
+  }
+
+  @override
+  Future<List<String>> getBookmarkPost({
+    required String uid,
+    String? startAfterId,
+  }) async {
+    List<String> bookmarksPostId = [];
+
+    final collection =
+        _firestore.collection(_collection).doc(uid).collection('bookmarks');
+
+    Query<Map<String, dynamic>>? query = collection;
+
+    if (startAfterId != null) {
+      final doc = await collection.doc(startAfterId).get();
+      query = query.startAfterDocument(doc);
+    }
+
+    final r = await query.limit(10).get();
+
+    for (var element in r.docs) {
+      bookmarksPostId.add(element.id);
+    }
+
+    return bookmarksPostId;
   }
 }

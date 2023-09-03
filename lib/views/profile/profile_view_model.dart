@@ -25,6 +25,9 @@ class ProfileViewModel with ChangeNotifier {
   final List<Map<String, dynamic>> _posts = [];
   List<Map<String, dynamic>> get posts => _posts;
 
+  final List<Map<String, dynamic>> _postBookmarks = [];
+  List<Map<String, dynamic>> get postBookmarks => _postBookmarks;
+
   List<String> _userImages = [];
   List<String> get userImages => _userImages;
 
@@ -50,13 +53,15 @@ class ProfileViewModel with ChangeNotifier {
 
     await setUserData(uid);
     await setCountFollowers();
-    await setPosts(uid);
+    await setPosts(uid, null);
+    await setBookmarkPost(uid, null);
     await setUserGallery(uid);
   }
 
   void reset() {
     _userImages.clear();
     _posts.clear();
+    _postBookmarks.clear();
 
     _follow = (0, 0);
     _isUserFollow = false;
@@ -164,9 +169,45 @@ class ProfileViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future setPosts(String uid) async {
+  Future setBookmarkPost(String uid, String? lastId) async {
     try {
-      final r = await postService.getPosts(uid: uid);
+      final bookmarks = await userService.getBookmarkPost(
+        uid: uid,
+        startAfterId: lastId,
+      );
+
+      for (var element in bookmarks) {
+        final post = await postService.getPost(element);
+
+        final isUserLike = await postService.isUserLikePost(
+          userId: userService.currentAuthUID()!,
+          postId: post.id,
+        );
+
+        final isUserBookmark = await postService.isUserBookmarkPost(
+          userId: userService.currentAuthUID()!,
+          postId: post.id,
+        );
+
+        final userPost = await userService.getUser(post.userId);
+
+        _postBookmarks.add({
+          'post': post,
+          'user': userPost,
+          'isLike': isUserLike,
+          'isBookmark': isUserBookmark,
+        });
+      }
+
+      notifyListeners();
+    } catch (e) {
+      setError(e.toString());
+    }
+  }
+
+  Future setPosts(String uid, String? lastId) async {
+    try {
+      final r = await postService.getPosts(uid: uid, startAfterId: lastId);
 
       for (var post in r) {
         final isUserLike = await postService.isUserLikePost(

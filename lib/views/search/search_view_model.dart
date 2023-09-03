@@ -23,12 +23,22 @@ class SearchViewModel with ChangeNotifier {
   String? _errMessage;
   String? get errMessage => _errMessage;
 
-  void initView(String query) async {
-    await setPosts(query);
-    await setUsers(query);
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
 
-    notifyListeners();
+  void initView(String query) async {
+    reset();
+    await setPosts(query, null);
+    // await setUsers(query);
   }
+
+  void reset() {
+    _resultPosts.clear();
+    _users.clear();
+    _errMessage = null;
+  }
+
+  void toogleLoading() => _isLoading = isLoading ? false : true;
 
   void setError(String? err) {
     _errMessage = err;
@@ -76,9 +86,12 @@ class SearchViewModel with ChangeNotifier {
     await postService.deletePost(post);
   }
 
-  Future setPosts(String query) async {
+  Future setPosts(String query, String? lastId) async {
     try {
-      final posts = await postService.getPosts(searchKey: query);
+      final posts = await postService.getPosts(
+        searchKey: query,
+        startAfterId: lastId,
+      );
 
       for (var post in posts) {
         final isUserLike = await postService.isUserLikePost(
@@ -100,6 +113,9 @@ class SearchViewModel with ChangeNotifier {
           'isBookmark': isUserBookmark,
         });
       }
+
+      toogleLoading();
+      notifyListeners();
     } catch (e) {
       setError(e.toString());
     }

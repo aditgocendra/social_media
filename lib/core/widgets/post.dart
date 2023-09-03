@@ -139,7 +139,7 @@ class Post extends StatelessWidget {
                   initialPage: 0,
                   reverse: false,
                   autoPlay: true,
-                  enableInfiniteScroll: true,
+                  enableInfiniteScroll: false,
                   autoPlayInterval: const Duration(seconds: 12),
                   autoPlayAnimationDuration: const Duration(milliseconds: 600),
                   autoPlayCurve: Curves.fastOutSlowIn,

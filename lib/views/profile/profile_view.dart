@@ -22,6 +22,8 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
+  final ScrollController scrollControllerPost = ScrollController();
+  final ScrollController scrollControllerBookmark = ScrollController();
 
   @override
   void initState() {
@@ -29,8 +31,15 @@ class _ProfileViewState extends State<ProfileView>
     tabController = TabController(length: 3, vsync: this);
 
     final viewModel = context.read<ProfileViewModel>();
-
     viewModel.initView(widget.id);
+
+    scrollControllerPost.addListener(() {
+      if (scrollControllerPost.position.pixels ==
+          scrollControllerPost.position.maxScrollExtent) {
+        final PostModel post = viewModel.posts.last['post'];
+        viewModel.setPosts(widget.id, post.id);
+      }
+    });
   }
 
   @override
@@ -194,6 +203,7 @@ class _ProfileViewState extends State<ProfileView>
                     ListView(
                       shrinkWrap: true,
                       primary: false,
+                      controller: scrollControllerPost,
                       children: viewModel.posts.map((val) {
                         final PostModel post = val['post'];
                         final UserModel user = val['user'];
@@ -221,8 +231,36 @@ class _ProfileViewState extends State<ProfileView>
                       }).toList(),
                     ),
                     // Bookmark Post
-                    Container(),
+                    ListView(
+                      shrinkWrap: true,
+                      primary: false,
+                      controller: scrollControllerBookmark,
+                      children: viewModel.postBookmarks.map((val) {
+                        final PostModel post = val['post'];
+                        final UserModel user = val['user'];
+                        final bool isLike = val['isLike'];
+                        final bool isBookmark = val['isBookmark'];
 
+                        return cardCustom(
+                          content: Post(
+                            post: post,
+                            user: user,
+                            isLike: isLike,
+                            isBookmark: isBookmark,
+                            updateCounterPost: (postId, field) {
+                              viewModel.updateCounterPost(postId, field);
+                            },
+                            deletePost: (uid) {
+                              if (uid != post.userId) {
+                                viewModel.blockPost(uid: uid, postId: post.id);
+                              } else {
+                                viewModel.deletePost(post);
+                              }
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
                     // Gallery
                     GridView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 8),
