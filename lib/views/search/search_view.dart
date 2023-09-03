@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media/core/values/colors.dart';
 import 'package:social_media/core/widgets/card_custom.dart';
 import 'package:social_media/core/widgets/post.dart';
 import '../../core/widgets/view_template.dart';
@@ -58,33 +60,41 @@ class _SearchViewState extends State<SearchView>
                 ListView(
                   shrinkWrap: true,
                   primary: false,
-                  children: viewModel.resultPosts.map((val) {
-                    PostModel post = val['post'];
-                    UserModel user = val['user'];
-                    bool isLike = val['isLike'];
-                    bool isBookmark = val['isBookmark'];
+                  controller: scrollController,
+                  children: [
+                    ...viewModel.resultPosts.map((val) {
+                      PostModel post = val['post'];
+                      UserModel user = val['user'];
+                      bool isLike = val['isLike'];
+                      bool isBookmark = val['isBookmark'];
 
-                    return cardCustom(
-                      content: Post(
-                        post: post,
-                        user: user,
-                        isLike: isLike,
-                        isBookmark: isBookmark,
-                        updateCounterPost: (postId, field) =>
-                            viewModel.updateCounterPost(
-                          postId,
-                          field,
+                      return cardCustom(
+                        content: Post(
+                          post: post,
+                          user: user,
+                          isLike: isLike,
+                          isBookmark: isBookmark,
+                          updateCounterPost: (postId, field) =>
+                              viewModel.updateCounterPost(
+                            postId,
+                            field,
+                          ),
+                          deletePost: (uid) {
+                            if (uid != post.userId) {
+                              viewModel.blockPost(uid: uid, postId: post.id);
+                            } else {
+                              viewModel.deletePost(post);
+                            }
+                          },
                         ),
-                        deletePost: (uid) {
-                          if (uid != post.userId) {
-                            viewModel.blockPost(uid: uid, postId: post.id);
-                          } else {
-                            viewModel.deletePost(post);
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                    if (viewModel.isLoading)
+                      LoadingAnimationWidget.threeArchedCircle(
+                        color: primaryLightColor,
+                        size: 40,
+                      )
+                  ],
                 ),
                 GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
