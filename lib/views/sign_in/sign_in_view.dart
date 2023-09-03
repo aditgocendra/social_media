@@ -45,6 +45,10 @@ class SignInView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset(
+                  'assets/logo/logo-n.png',
+                  width: 84,
+                ),
                 TextFormField(
                   controller: emailTec,
                   validator: (value) => validatorField(value),
