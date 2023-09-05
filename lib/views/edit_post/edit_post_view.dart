@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/decorations/text_field_decoration.dart';
@@ -50,7 +51,8 @@ class _EditPostViewState extends State<EditPostView> {
           return Container();
         }
 
-        tecCaption.text = viewModel.post!.caption;
+        tecCaption.text = viewModel.caption;
+        ;
 
         return Column(
           children: [
@@ -144,6 +146,7 @@ class _EditPostViewState extends State<EditPostView> {
               controller: tecCaption,
               maxLines: 5,
               style: const TextStyle(fontSize: 14),
+              onChanged: (value) => viewModel.changeCaption(value),
               decoration: TextFieldDecoration.filled(
                 hint: 'Caption',
               ),
@@ -193,13 +196,15 @@ class _EditPostViewState extends State<EditPostView> {
             Builder(
               builder: (context) {
                 if (viewModel.isLoading) {
-                  return const CircularProgressIndicator();
+                  return LoadingAnimationWidget.threeArchedCircle(
+                    color: primaryLightColor,
+                    size: 40,
+                  );
                 }
 
                 return ElevatedButton(
                   onPressed: () => {
                     viewModel.updatePost(
-                      caption: tecCaption.text.trim(),
                       callbackSuccess: () => context.go('/'),
                     )
                   },

@@ -20,6 +20,9 @@ class EditPostViewModel with ChangeNotifier {
   PostModel? _post;
   PostModel? get post => _post;
 
+  String _caption = '';
+  String get caption => _caption;
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -37,6 +40,10 @@ class EditPostViewModel with ChangeNotifier {
     _imageContentDelete.clear();
     _isLoading = false;
     _post = null;
+  }
+
+  void changeCaption(String newCaption) {
+    _caption = newCaption;
   }
 
   void addTag(String tag) {
@@ -71,7 +78,6 @@ class EditPostViewModel with ChangeNotifier {
   }
 
   void updatePost({
-    required String caption,
     required VoidCallback callbackSuccess,
   }) async {
     _post!.caption = caption;
@@ -102,6 +108,8 @@ class EditPostViewModel with ChangeNotifier {
       for (var element in post!.content) {
         _imageContent.add(element);
       }
+
+      _caption = post!.caption;
       notifyListeners();
     } catch (e) {
       setError(e.toString());
