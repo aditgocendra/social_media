@@ -19,6 +19,8 @@ abstract class UserService {
     required String password,
   });
 
+  Future<UserCredential> anonSignIn();
+
   Future<List<String>> getAvatars();
 
   Future setUser(UserModel user);
@@ -86,6 +88,11 @@ class UserServiceImpl implements UserService {
     } catch (e) {
       throw e.toString();
     }
+  }
+
+  @override
+  Future<UserCredential> anonSignIn() async {
+    return await _authentication.anonSignIn();
   }
 
   @override
