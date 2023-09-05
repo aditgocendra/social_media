@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media/auth_state.dart';
 
 import '../../core/widgets/view_template.dart';
 import '../../core/decorations/text_field_decoration.dart';
@@ -34,6 +35,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<EditProfileViewModel>();
+    final authState = context.read<AuthState>();
 
     if (viewModel.user != null) {
       tecUsername.text = viewModel.user!.username;
@@ -113,7 +115,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                   viewModel.saveUser(
                     username: tecUsername.text.trim(),
                     status: tecStatus.text.trim(),
-                    callbackSuccess: () => context.go('/'),
+                    callbackSuccess: () async {
+                      await authState.setUserData();
+                      // ignore: use_build_context_synchronously
+                      context.go('/');
+                    },
                   );
                 },
                 style: ElevatedButton.styleFrom(

@@ -11,6 +11,8 @@ abstract class Authentication {
     required String password,
   });
 
+  Future<UserCredential> anonSignIn();
+
   User? getCurrentUser();
 
   void signOut();
@@ -59,5 +61,10 @@ class AuthenticationImpl implements Authentication {
   @override
   void signOut() {
     _firebaseAuth.signOut();
+  }
+
+  @override
+  Future<UserCredential> anonSignIn() async {
+    return _firebaseAuth.signInAnonymously();
   }
 }

@@ -30,6 +30,8 @@ class HomeViewModel with ChangeNotifier {
 
   void reset() {
     _postUsers.clear();
+    _isLoading = false;
+    _errMessage = null;
   }
 
   void setError(String? err) {

@@ -29,7 +29,7 @@ CustomTransitionPage buildPageWithDefaultTransition<T>({
 }
 
 GoRouter setRouter(BuildContext context) {
-  final authState = context.read<AuthState>();
+  final authState = context.watch<AuthState>();
 
   return GoRouter(
     redirect: (_, state) {
@@ -37,9 +37,9 @@ GoRouter setRouter(BuildContext context) {
         return '/sign_in';
       }
 
-      if (authState.isLoading) {
-        return null;
-      }
+      // if (authState.isLoading) {
+      //   return null;
+      // }
 
       if (authState.userData == null && state.uri.toString() != '/sign_up') {
         return '/edit_profile';
