@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media/auth_state.dart';
 
@@ -88,7 +89,10 @@ class SignInView extends StatelessWidget {
                 Builder(
                   builder: (context) {
                     if (viewModel.isLoading) {
-                      return const CircularProgressIndicator();
+                      return LoadingAnimationWidget.threeArchedCircle(
+                        color: primaryLightColor,
+                        size: 40,
+                      );
                     }
 
                     return ElevatedButton(
